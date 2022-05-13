@@ -30,6 +30,7 @@ SIZE = 50
 WIDTH, HEIGHT = SIZE*COLS, SIZE*ROWS+100    
 
 NUM_FONT = pygame.font.SysFont("comicsans-regular", 20)
+TEXT_FONT = pygame.font.SysFont("comicsans-regular", 70)
 NUM_COLORS = {1: "black", 2: "green", 3: "blue", 4: "orange", 5: "red", 6: "purple", 7: "pink", 8: "yellow"}
 
 GOIN = pygame.image.load("../assets/goin1.png")
@@ -95,6 +96,7 @@ def make_map(rows, cols, mines):
     
     return field
 
+
 def make_covered_map(rows, cols):
     """
     Makes a list containing what squares is covered
@@ -102,7 +104,37 @@ def make_covered_map(rows, cols):
     cover_field = [[1 for i in range(cols)] for i in range(rows)]
     return cover_field
 
-def draw(field, cover_field):
+def draw_info_board(wonorlost = False):
+    board_rect = pygame.Rect(0, SIZE*COLS, WIDTH, HEIGHT-SIZE*COLS)
+    pygame.draw.rect(WINDOW, (0,0,0), board_rect, 5)
+
+    font = pygame.font.SysFont("comicsans-regular", 30)
+
+    text_margin = 10
+
+    text = font.render(f"Cols. {COLS}",1 ,"black")
+    WINDOW.blit(text, (board_rect.left + text_margin, board_rect.top + 10))
+
+    text = font.render(f"Rows. {ROWS}",1 ,"black")
+    WINDOW.blit(text, (board_rect.left + text_margin, board_rect.top + 40))
+
+    text = font.render(f"Mines: . {MINES}",1 ,"black")
+    WINDOW.blit(text, (board_rect.left + text_margin, board_rect.top + 70))
+
+    if wonorlost == "lost":
+        text = TEXT_FONT.render("GAME OVER", 60, "red")
+        WINDOW.blit(text, 
+        (board_rect.left + ((board_rect.right-board_rect.left)/2-text.get_width()/2), 
+        board_rect.top + ((board_rect.bottom-board_rect.top)/2-text.get_height()/2)))
+    elif wonorlost == "won": 
+        text = TEXT_FONT.render("WON", 60, "green")
+        WINDOW.blit(text, 
+        (board_rect.left + ((board_rect.right-board_rect.left)/2-text.get_width()/2), 
+        board_rect.top + ((board_rect.bottom-board_rect.top)/2-text.get_height()/2)))
+
+
+
+def draw(field, cover_field, wonorlost = False):
     """
     Draws to the screen
     """
@@ -128,8 +160,8 @@ def draw(field, cover_field):
                 WINDOW.blit(FLAG, (x,y, SIZE, SIZE))
                 pygame.draw.rect(WINDOW, "black", (x,y, SIZE, SIZE), 2)
 
+    draw_info_board(wonorlost)
     pygame.display.update()
-
 def bfs(row, col, cover_field, field):
     q = []
     visited = set()
@@ -156,10 +188,36 @@ def get_tiles_remining(cover_field):
                 count += 1
     return count
 
-def gameover():
+def gameover(field, cover_field):
+    cover_field = [[0 for i in range(COLS)] for i in range(ROWS)]
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+                    break
+        draw(field, cover_field, "lost")
     print("game over")
 
-def win():
+def win(field, cover_field):
+    cover_field = [[0 for i in range(COLS)] for i in range(ROWS)]
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    quit()
+                    break
+        draw(field, cover_field, "won")
     print("win")
 
 def main():
@@ -167,6 +225,8 @@ def main():
     Game loop
     """
     running = True
+
+    score = 0
 
     field = make_map(ROWS, COLS, MINES)
     cover_field = make_covered_map(ROWS, COLS)
@@ -194,8 +254,9 @@ def main():
                     if value == 0:
                         bfs(field_pos[1], field_pos[0], cover_field, field)
                     if value == -1:
-                        gameover()
+                        gameover(field, cover_field)
                         running = False
+                        break
                 elif right:
                     if cover_field[field_pos[1]][field_pos[0]] == 1:
                         print("Placed flag", field_pos)
@@ -203,9 +264,11 @@ def main():
                     elif cover_field[field_pos[1]][field_pos[0]] == 2:
                         print("Removed flag", field_pos)
                         cover_field[field_pos[1]][field_pos[0]] = 1
+
         if get_tiles_remining(cover_field) == MINES:
-            win()
+            win(field, cover_field)
             running = False
+            break
         
         draw(field, cover_field)
     
