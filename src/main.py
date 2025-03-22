@@ -33,10 +33,10 @@ NUM_FONT = pygame.font.SysFont("comicsans-regular", 20)
 TEXT_FONT = pygame.font.SysFont("comicsans-regular", 70)
 NUM_COLORS = {1: "black", 2: "green", 3: "blue", 4: "orange", 5: "red", 6: "purple", 7: "pink", 8: "yellow"}
 
-GOIN = pygame.image.load("../assets/goin1.png")
+GOIN = pygame.image.load("assets/goin1.png")
 GOIN = pygame.transform.scale(GOIN, (SIZE, SIZE))
 
-FLAG = pygame.image.load("../assets/flag-pole.svg")
+FLAG = pygame.image.load("assets/flag-pole.svg")
 FLAG = pygame.transform.scale(FLAG, (SIZE, SIZE))
 
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -127,7 +127,7 @@ def draw_info_board(wonorlost = False):
         (board_rect.left + ((board_rect.right-board_rect.left)/2-text.get_width()/2), 
         board_rect.top + ((board_rect.bottom-board_rect.top)/2-text.get_height()/2)))
     elif wonorlost == "won": 
-        text = TEXT_FONT.render("WON", 60, "green")
+        text = TEXT_FONT.render("YOU WON", 60, "green")
         WINDOW.blit(text, 
         (board_rect.left + ((board_rect.right-board_rect.left)/2-text.get_width()/2), 
         board_rect.top + ((board_rect.bottom-board_rect.top)/2-text.get_height()/2)))
